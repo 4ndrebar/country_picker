@@ -5,9 +5,10 @@ import io, os ,time
 import PySimpleGUI as sg
 from PIL import ImageTk, Image
 import numpy as np
+from playsound import playsound
+import multiprocessing
+from playsound import playsound
 
-os.chdir("./data")
-REGION_PROBABILITY = 1/5
 
 def alphano(img, alpha):
     img = img.convert("RGBA")
@@ -20,6 +21,7 @@ def alphano(img, alpha):
             newData.append(item)
     img.putdata(newData)
     return img
+
 
 def title_bar(title, text_color, background_color):
     """
@@ -41,6 +43,12 @@ def title_bar(title, text_color, background_color):
                    pad=(0, 0), background_color=bc)]
 
 if __name__ == "__main__":
+
+    p = multiprocessing.Process(target=playsound, args=("song.mp3",))
+    p.start()   
+    os.chdir("./data")
+    REGION_PROBABILITY = 1/5
+
 
     with open('codes.json') as json_file:
         data = json.load(json_file)
@@ -104,5 +112,6 @@ if __name__ == "__main__":
                     window.refresh()
                 window['-TEXT1-'].update(country_name)
                 window.ElementJustification = "c"
+    p.terminate()
     window.close()
     window_background.close()
