@@ -11,11 +11,13 @@ from playsound import playsound
 
 
 def alphano(img, alpha):
+    # slowly reveals the flag decreasing the transparency
     img = img.convert("RGBA")
     datas = img.getdata()
     newData = []
     for item in datas:
         if item[3] != 0:
+            #append the alpha value to the RGBA array
             newData.append((item[0], item[1], item[2], alpha))
         else:
             newData.append(item)
@@ -43,24 +45,25 @@ def title_bar(title, text_color, background_color):
                    pad=(0, 0), background_color=bc)]
 
 if __name__ == "__main__":
-
+    #reproduce the music in background
     p = multiprocessing.Process(target=playsound, args=("song.mp3",))
     p.start()   
     os.chdir("./data")
+    #the probability to extract a region of Italy
     REGION_PROBABILITY = 1/5
 
 
     with open('codes.json') as json_file:
+        #loading the country codes
         data = json.load(json_file)
         regions = os.listdir("regioni")
+        #gui layout
         background_layout = [title_bar("La prossima cena Et(n)ica", sg.theme_text_color(
         ), sg.theme_background_color()), [sg.Image(r'map.png')]]
         window_background = sg.Window('Background', background_layout, no_titlebar=True, finalize=True, margins=(
             0, 0), element_padding=(0, 0), right_click_menu=[[''], ['Exit', ]])
-
         # expand the titlebar's rightmost column so that it resizes correctly
         window_background['-C-'].expand(True, False, False)
-
         text = "Esci la nazione"
         layout = [
             [sg.Image(size=(256, 192), key='-IMAGE-'), ],
@@ -75,7 +78,7 @@ if __name__ == "__main__":
                         keep_on_top=True, grab_anywhere=False,  transparent_color=sg.theme_background_color(), no_titlebar=True)
 
 
-    # Create an event loop
+    #event loop
     while True:
         window, event, values = sg.read_all_windows()
         print(event, values)
@@ -86,7 +89,7 @@ if __name__ == "__main__":
         elif event is None or event == 'Cancel' or event == 'Exit':
             print(f'closing window = {window.Title}')
             break
-        elif event == text:
+        elif event == text: #when the extract button is pushed
             window.find_element('-TEXT1-').Update('')
             random_flag = rd.random()
             if random_flag <= REGION_PROBABILITY:
@@ -95,7 +98,7 @@ if __name__ == "__main__":
                 country_name = region[:-4] 
             else:
                 country = rd.choice(list(data.keys()))
-                if country[:2]=="us":
+                if country[:2]=="us": #extract the american flag for each US state
                     flagname = "countries/us.png"
                 else:
                     flagname = "countries/"+country + ".png"
